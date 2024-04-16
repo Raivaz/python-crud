@@ -1,0 +1,31 @@
+#FRONT END
+#Llogs
+FRONT_END/logs
+FRONT_END/*.log
+FRONT_END/npm-debug.log*
+FRONT_END/yarn-debug.log*
+FRONT_END/yarn-error.log*
+FRONT_END/pnpm-debug.log*
+FRONT_END/lerna-debug.log*
+
+FRONT_END/node_modules
+FRONT_END/dist
+FRONT_END/dist-ssr
+FRONT_END/*.local
+
+# Editor directories and files
+FRONT_END/.vscode/*
+FRONT_END/!.vscode/extensions.json
+FRONT_END/.idea
+FRONT_END/.DS_Store
+FRONT_END/*.suo
+FRONT_END/*.ntvs*
+FRONT_END/*.njsproj
+FRONT_END/*.sln
+FRONT_END/*.sw?
+
+
+#BACK END
+BACK_END/.venv
+BACK_END/__pycache__
+# BACK_END/__pycache__/*.pyc
