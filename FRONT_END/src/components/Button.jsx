@@ -1,13 +1,21 @@
-function Button({value = 'CADASTRAR', className, ...props}) {
+import PropTypes from 'prop-types'
+
+function Button({value, className, ...props}) {
     return (
         <div className="flex mt-2">
             <button 
-                className={'bg-cyan-700 text-white text-[14px] p-2 rounded-md w-full hover:bg-cyan-600 ' + className} {...props}
+                className={'text-white text-[14px] p-2 rounded-md w-full '+ className} {...props}
             >
                 {value}
             </button>
         </div>
     )
 }
+
+Button.propTypes = {
+    value: PropTypes.string,
+    className: PropTypes.string,
+}
+
 
 export default Button
