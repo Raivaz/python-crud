@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Button from './components/Button';
 import Label from './components/Label';
 import { useForm } from 'react-hook-form'
+import { FaRegTrashCan, FaPenToSquare } from "react-icons/fa6";
 
 
 
@@ -31,27 +32,33 @@ function App() {
         <header className='bg-slate-300 py-3 px-3 text-3xl text-gray-800 col-span-6 border-b-2 border-sky-500'>CRUD REACT COM PYTHON</header>
         <main className='col-span-5 bg-slate-400 h-[calc(100vh-80px)] ml-[10px] rounded-md'>
           <h2 className='p-3'>CADASTRADOS</h2>
-          <table className='table-fixed'>
+          <table className='w-full'>
             <thead>
               <tr>
-                <th className='w-[300px]'>Nome</th>
-                <th className='w-[300px]'>E-mail</th>
-                <th className='w-[300px]'>Senha</th>
+                <th className='w-[20%]'>id</th>
+                <th className='w-[20%]'>Nome</th>
+                <th className='w-[20%]'>E-mail</th>
+                <th className='w-[20%]'>Senha</th>
+                <th className='w-[20%]'>Ações</th>
               </tr>
             </thead>
             <tbody>
               {
-                data && data.map((value, key) => (
+                data && data.map((register, key) => (   
+                  <tr className='text-center' key={key}>
+                    {
                       
-                      <tr className='text-center'>
-                        <td>{value}</td>
-                        <td>{value}</td>
-                        <td>{value}</td>
-                        <td>{value}</td>
-                      </tr>
-                 
+                      register.map((value) => (
                    
-                    
+                        <td key={value}>{value}</td>
+                           
+                      ))
+                    }
+                    <td className='flex gap-2 justify-center'>
+                      <FaRegTrashCan />
+                      <FaPenToSquare/>
+                    </td>    
+                  </tr>                   
                 ))
               }
             </tbody>

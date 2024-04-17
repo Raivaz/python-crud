@@ -50,7 +50,7 @@ async def read_root():
     
 @app.get('/')
 async def fetch_registers():
-    cursor.execute(f'SELECT * FROM users')
+    cursor.execute('SELECT * FROM users')
     data = cursor.fetchall()
     return {'response': data}
 
