@@ -10,40 +10,48 @@ import ReactLoading from 'react-loading'
 
 function App() {
   const api_url = import.meta.env.VITE_API_URL
-  const [buttonName, setButtonName] = useState('CADASTRAR')
+  const [ButtonCancel, setButtonCancel] = useState(false)
   const [registrations, setRegistrations] = useState([])
+  const [infoRegister, setInfoRegister] = useState({'id_db': 0, 'position_array':0})
   const [loading, setLoading] = useState(false)
   const {register, handleSubmit, reset, setValue, formState:{errors} } = useForm()
  
-  
+
   useEffect(() => {
+    setLoading(true)
     axios.get(api_url)
       .then((res) => {
         setRegistrations(res.data.response)
+        setLoading(false)
       })
-      .catch((e) => console.log(e))
+      .catch((e) => {
+        console.log(e)
+        setLoading(false)
+      })
   },[])
 
 
   //cadastro
   function onSubmit(form_data) {
-    console.log(form_data)
+    // console.log(form_data)
+    setLoading(true)
     axios.post(api_url, form_data)
     .then((response) => {
-      console.log(response)
-      response.status == 200 && setRegistrations([...registrations, Object.values(form_data)])
+      response.status == 200 && registrations.push(response.data.response[0])
       reset()
+      setLoading(false)
     })
     .catch((error) => {
       error.response.status == 405 && alert('Email já cadastrado')
+      setLoading(false)
     })
   }
 
 
   //exclusão
-  function delete_register(email, position) {
+  function delete_register(id, position) {
     setLoading(true)
-    axios.post(`${api_url}/delete/${email}`)
+    axios.post(`${api_url}/delete/${id}`)
     .then(() => {
       setRegistrations(
         registrations.filter((user_register, key) => {
@@ -54,17 +62,34 @@ function App() {
       )
       setLoading(false)
     }).catch((error) => console.log(error))
+    
   }
 
-  //edição
-  function edit_register(register) {
-    console.log(register)
-    
+  //editar
+  function edit_register(data) {
+    setLoading(true)
+    axios.post(`${api_url}/id/${infoRegister.id_db}`, data)
+    .then(() => {
+      let register_edited = Object.values(data)
+      register_edited.unshift(infoRegister.id_db)
+      registrations[infoRegister.position_array]=register_edited
+      setLoading(false)
+      reset()
+      setButtonCancel(false)
+    })
+    .catch((error) => console.log(error))
+  }
+
+  //formulário de edição
+  function edit_form(register, key) {
+    setButtonCancel(true)
+    setInfoRegister({id_db: register[0], position_array: key})
     setValue('name', register[1])
     setValue('email', register[2])
     setValue('password', register[3])
-    setButtonName('EDITAR')
+  
   }
+
 
   return (
     <>
@@ -88,25 +113,25 @@ function App() {
             <tbody>
               {
                 registrations && registrations.map((register, key) => (   
-                  <tr className='text-center' key={key}>
+                  <tr className='text-center cursor-pointer' key={key}>
                     { 
                       register.map((value) => (
                         typeof value != 'number' &&
-                        <td key={value}>{value}</td>   
+                        <td className='py-2' key={value}>{value}</td>   
                       ))
                     }
-                    <td className='flex gap-4 justify-center'>
+                    <td className='flex gap-4 justify-center py-2'>
                       <FaRegTrashCan 
                         className='hover:fill-red-custom' 
                         size={23} color='#b11623' 
                         cursor={'pointer'}
-                        onClick={() => delete_register(register[2], key)}
+                        onClick={() => delete_register(register[0], key)}
                       />
                       <FaPenToSquare 
                         className='hover:fill-cyan-300' 
                         size={23} color='#09738a' 
                         cursor={'pointer'}
-                        onClick={() => edit_register(register)}
+                        onClick={() => edit_form(register, key)}
                       />
                     </td>    
                   </tr>                   
@@ -155,13 +180,35 @@ function App() {
                {errors?.password?.type == 'required' && <p className='text-red-700'>campo obrigatório</p>}
                {errors?.password?.type == 'minLength' && <p className='text-red-700'>senha deve conter no mínimo 8 caracteres</p>}
             </div>
-            <Button
-              className={buttonName == 'CADASTRAR' ? 'bg-cyan-700 hover:bg-cyan-600' : 'bg-yellow-500 hover:bg-yellow-400'}
-              value={buttonName}
-              onClick={(e) => {
-              e.preventDefault()
-              handleSubmit(onSubmit)()
-            }}/>
+            <div className='flex mt-2 justify-between'>
+              
+              {ButtonCancel ?
+                <>
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handleSubmit(edit_register)()
+                    }}
+                    value='EDITAR'
+                    className='bg-yellow-500 hover:bg-yellow-400 w-[48%]'
+                  />
+
+                  <Button
+                    onClick={() => reset()}
+                    value='CANCELAR'
+                    className='bg-red-700 hover:bg-red-600 w-[48%]'
+                  />
+                </>
+                :
+                <Button
+                  className='w-full bg-cyan-700 hover:bg-cyan-600'
+                  value='CADASTRAR'
+                  onClick={(e) => {
+                  e.preventDefault()
+                  handleSubmit(onSubmit)()
+                }}/>
+              }
+            </div>
           </form>
         </div>
       </div>

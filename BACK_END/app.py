@@ -32,7 +32,7 @@ connection = mysql.connector.connect(
 
 cursor = connection.cursor()
 
-
+#carregar 
 @app.get('/')
 async def fetch_registers():
     cursor.execute('SELECT * FROM users')
@@ -40,27 +40,34 @@ async def fetch_registers():
     return {'response': data}
 
 
+#castrar
 @app.post('/')
 async def add_register(data: dict):
-
     cursor.execute(f'SELECT * FROM users WHERE email="{data['email']}"')
     already_exist = cursor.fetchall()
    
     if not already_exist:
         cursor.execute(f'INSERT INTO users (name, email, password) VALUES ("{data['name']}", "{data['email']}", "{data['password']}")')
         connection.commit()
+        cursor.execute(f'SELECT * FROM users WHERE email="{data['email']}"')
+        return {'response': cursor.fetchall()}
     else:
        raise HTTPException(status_code=405, detail="Email já cadastrado")
         
 
-
-@app.post('/delete/{email}')  
-async def delete_register(email: str):
-    cursor.execute(f'DELETE FROM users WHERE email="{email}"')
+#deletar
+@app.post('/delete/{id}')  
+async def delete_register(id: int):
+    cursor.execute(f'DELETE FROM users WHERE id={id}')
     connection.commit()
-    return {'email': email}
    
-
+   
+#editar
+@app.post('/id/{id}')
+async def edit_register(id: int, data: dict):
+    cursor.execute(f'UPDATE users SET name="{data['name']}", email="{data['email']}", password="{data['password']}"  WHERE id={id}')
+    connection.commit()
+    
 
 
 
