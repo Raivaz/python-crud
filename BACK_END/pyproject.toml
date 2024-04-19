@@ -12,6 +12,11 @@ uvicorn = {extras = ["standard"], version = "^0.29.0"}
 python-dotenv = "^1.0.1"
 mysql-connector-python = "^8.3.0"
 python-multipart = "^0.0.9"
+pandas = "^2.2.2"
+openpyxl = "^3.1.2"
+sqlalchemy = "^2.0.29"
+xlrd = "^2.0.1"
+mysqlclient = "^2.2.4"
 
 
 [build-system]

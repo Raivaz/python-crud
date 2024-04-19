@@ -1,15 +1,12 @@
-# import sys;
-# sys.path.append('e:\PYTHON\PROJECTS\CRUD\BACK_END\.venv\lib\fastapi')
-# print(sys.path)
-
-
 from typing import Union
-from fastapi import FastAPI, HTTPException # type: ignore
+from fastapi import FastAPI, HTTPException, UploadFile, File # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from dotenv import load_dotenv #type: ignore
 import os
 import mysql.connector # type: ignore
 import json
+import pandas as pd # type: ignore
+from sqlalchemy import create_engine
 
 load_dotenv()
 
@@ -40,9 +37,11 @@ async def fetch_registers():
     return {'response': data}
 
 
+
 #castrar
 @app.post('/')
-async def add_register(data: dict):
+async def add_register(data: dict = {}):
+    
     cursor.execute(f'SELECT * FROM users WHERE email="{data['email']}"')
     already_exist = cursor.fetchall()
    
@@ -68,9 +67,19 @@ async def edit_register(id: int, data: dict):
     cursor.execute(f'UPDATE users SET name="{data['name']}", email="{data['email']}", password="{data['password']}"  WHERE id={id}')
     connection.commit()
     
+#import
+@app.post('/import')
+def import_register(data: UploadFile = File(...)):
+    engine = create_engine(f'mysql://{os.environ['USER_DATABASE']}:{os.environ['PASSWORD_DATABASE']}@{os.environ['URL_DATABASE']}/{os.environ['DATABASE']}')
+    tabela = pd.read_excel(data.file)
+    tabela.to_sql('users', con=engine, if_exists='append', index=False)
+    
+
+    # for i in tabela.itertuples(index=False):
+    #     cursor.execute(f'INSERT INTO users (name, email, password) VALUES ("{i.name}", "{i.mail}", "{i.password}")')
+    #     connection.commit()
+  
 
 
 
 
-# cursor.close()
-# connection.close()
